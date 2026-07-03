@@ -1,0 +1,40 @@
+{
+    "name": "adk-router-js",
+    "version": "0.1.0",
+    "description": "Provider-agnostic ADK extension for OpenAI-compatible LLM providers (TypeScript)",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "test": "node tests/test.js"
+    },
+    "keywords": [
+        "adk",
+        "google-adk",
+        "litellm",
+        "openrouter",
+        "llm",
+        "ai"
+    ],
+    "author": "ADK Router Team",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "@types/node": "^20.0.0"
+    },
+    "peerDependencies": {
+        "@google/genai": "^1.0.0"
+    }
+}

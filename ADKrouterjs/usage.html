@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADK Router JS Usage Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6; color: #333; background: #fff;
+            max-width: 900px; margin: 0 auto; padding: 20px;
+        }
+        h1 { color: #1a73e8; margin-bottom: 12px; font-size: 2rem; }
+        h2 { color: #5f6368; margin: 24px 0 12px 0; font-size: 1.5rem; border-bottom: 1px solid #e8eaed; padding-bottom: 8px; }
+        h3 { color: #202124; margin: 16px 0 8px; font-size: 1.25rem; }
+        code {
+            background: #f1f3f4; padding: 2px 6px; border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em;
+        }
+        pre {
+            background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px;
+            padding: 16px; overflow-x: auto; margin: 16px 0;
+        }
+        pre code { background: transparent; padding: 0; }
+        .note {
+            background: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px;
+            margin: 16px 0; border-radius: 0 8px 8px 0;
+        }
+        .highlight { background: #fcf8e6; padding: 8px 12px; border-radius: 4px; }
+        .tag {
+            display: inline-block; background: #e8eaed; color: #5f6368;
+            padding: 2px 8px; border-radius: 12px; font-size: 0.85em; margin-right: 8px;
+        }
+        .env-var {
+            background: #f6f8fa; padding: 8px 12px; border-radius: 6px;
+            font-family: monospace; display: inline-block; margin: 4px 0;
+        }
+        .section { margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <h1>ADK Router JS Usage Guide</h1>
+    <p><span class="tag">TypeScript</span> <span class="tag">ADK</span> <span class="tag">OpenRouter</span> <span class="tag">LiteLLM</span></p>
+
+    <div class="section">
+        <h2>Quick Start</h2>
+        <p>Install and create a model with OpenRouter:</p>
+        <pre><code># Install
+npm install adk-router-js
+
+# TypeScript Usage
+import { getModel, OpenRouterProvider, LiteLLMProvider } from 'adk-router-js';
+
+// Method 1: Using getModel helper
+const model = getModel({
+    modelName: "xiaomi/mimo-v2-flash:free",
+    provider: "openrouter",
+    apiKey: process.env.OPENROUTER_API_KEY
+});
+
+// Use with ADK Agent
+import { LlmAgent } from '@google/adk';
+
+const agent = new LlmAgent({
+    model: model,
+    name: 'agent',
+    instruction: 'You are a helpful assistant.',
+});
+
+// Method 2: Using OpenRouterProvider class
+const provider = OpenRouterProvider.fromEnv();
+const model2 = await provider.createModel("xiaomi/mimo-v2-flash:free");
+
+// Method 3: Using LiteLLMProvider directly
+const liteProvider = LiteLLMProvider.getInstance();
+const model3 = liteProvider.createModel(
+    "qwen/qwen3-preview:free",
+    "openrouter",
+    process.env.OPENROUTER_API_KEY
+);</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Supported Environment Variables</h2>
+        <p>Set these environment variables for automatic configuration:</p>
+        
+        <h3>OpenRouter</h3>
+        <div class="env-var">OPENROUTER_API_KEY=your_openrouter_api_key</div>
+        <div class="env-var">OPENROUTER_BASE_URL=https://openrouter.ai/api/v1</div>
+        <p class="highlight">Base URL is optional - defaults to <code>https://openrouter.ai/api/v1</code></p>
+
+        <h3>OpenAI</h3>
+        <div class="env-var">OPENAI_API_KEY=sk-...</div>
+
+        <h3>Anthropic</h3>
+        <div class="env-var">ANTHROPIC_API_KEY=sk-ant-...</div>
+
+        <h3>Azure OpenAI</h3>
+        <div class="env-var">AZURE_OPENAI_API_KEY=...</div>
+        <div class="env-var">AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/</div>
+    </div>
+
+    <div class="section">
+        <h2>Using LiteLLM Parameters</h2>
+        <p>ADK Router supports all standard LiteLLM parameters:</p>
+        
+        <h3>Common Parameters</h3>
+        <pre><code>const modelOptions = getModel({
+    modelName: "openrouter/qwen/qwen3-preview:free",
+    provider: "openrouter",
+    apiKey: "YOUR_KEY",
+    temperature: 0.7,
+    maxTokens: 4096,
+    topP: 0.9,
+    frequencyPenalty: 0.1,
+    presencePenalty: 0.1,
+    stop: ["\n\n"],
+});
+
+// With streaming
+const streamingModel = getModel({
+    modelName: "openai/gpt-4o",
+    streaming: true,
+    timeout: 120,
+});</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Creating Custom Providers</h2>
+        <p>Add support for any OpenAI-compatible endpoint:</p>
+        <pre><code>import { registerProvider, getModel } from 'adk-router-js';
+
+registerProvider("my-custom", {
+    base_url: "https://my-endpoint.com/v1",
+    env_key: "MY_CUSTOM_API_KEY",
+    name_prefix: "custom",
+    description: "My Custom Provider",
+    category: "custom",
+});
+
+// Use your custom provider
+const model = getModel("my-model", "my-custom");
+
+// With environment variables
+// MY_CUSTOM_API_KEY=your_key_here</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Available Methods</h2>
+        <pre><code>import { 
+    getModel, 
+    OpenRouterProvider, 
+    LiteLLMProvider,
+    registerProvider,
+    getAllProviders,
+    getProvidersByCategory,
+    DEFAULT_PROVIDERS
+} from 'adk-router-js';
+
+// Get all available providers
+console.log(getAllProviders());
+
+// Get providers by category
+const gateways = getProvidersByCategory('gateway');
+const openAiBased = getProvidersByCategory('provider');
+
+// Query provider info
+const openrouter = DEFAULT_PROVIDERS.openrouter;
+console.log(openrouter.base_url); // https://openrouter.ai/api/v1</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Example .env File</h2>
+        <pre><code># OpenRouter Configuration (Free Models)
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+
+# OpenAI Configuration
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional: Model preferences
+DEFAULT_MODEL=qwen/qwen3-preview:free
+MAX_TOKENS=4096
+TEMPERATURE=0.7
+
+# For Azure OpenAI
+# AZURE_OPENAI_API_KEY=your_azure_key
+# AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/</code></pre>
+    </div>
+
+    <footer>
+        <p class="note">
+            Note: Requires @google/adk and litellm packages.<br>
+            View full provider list at: <a href="providers.html">providers.html</a>
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADK Router Usage Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6; color: #333; background: #fff;
+            max-width: 900px; margin: 0 auto; padding: 20px;
+        }
+        h1 { color: #1a73e8; margin-bottom: 12px; font-size: 2rem; }
+        h2 { color: #5f6368; margin: 24px 0 12px 0; font-size: 1.5rem; border-bottom: 1px solid #e8eaed; padding-bottom: 8px; }
+        h3 { color: #202124; margin: 16px 0 8px; font-size: 1.25rem; }
+        code {
+            background: #f1f3f4; padding: 2px 6px; border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em;
+        }
+        pre {
+            background: #f8f9fa; border: 1px solid #dadce0; border-radius: 8px;
+            padding: 16px; overflow-x: auto; margin: 16px 0;
+        }
+        pre code { background: transparent; padding: 0; }
+        table {
+            width: 100%; border-collapse: collapse; margin: 16px 0;
+        }
+        th, td {
+            text-align: left; padding: 12px 16px; border-bottom: 1px solid #e8eaed;
+        }
+        th { background: #f8f9fa; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .note {
+            background: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px 16px;
+            margin: 16px 0; border-radius: 0 8px 8px 0;
+        }
+        .highlight { background: #fcf8e6; padding: 8px 12px; border-radius: 4px; }
+        .tag {
+            display: inline-block; background: #e8eaed; color: #5f6368;
+            padding: 2px 8px; border-radius: 12px; font-size: 0.85em; margin-right: 8px;
+        }
+        .env-var {
+            background: #f6f8fa; padding: 8px 12px; border-radius: 6px;
+            font-family: monospace; display: inline-block; margin: 4px 0;
+        }
+        .section { margin-bottom: 24px; }
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .provider-card {
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 14px;
+            background: #fff;
+        }
+        .provider-card h4 {
+            margin-bottom: 8px;
+            color: #1a73e8;
+        }
+        .provider-meta {
+            font-size: 0.85rem;
+            color: #5f6368;
+            margin-bottom: 8px;
+        }
+        .provider-meta span {
+            background: #e8eaed;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 6px;
+        }
+        .provider-base {
+            font-size: 0.8rem;
+            color: #5f6368;
+        }
+        .provider-base code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ADK Router Usage Guide</h1>
+    <p><span class="tag">Python</span> <span class="tag">ADK</span> <span class="tag">OpenRouter</span> <span class="tag">LiteLLM</span></p>
+
+    <div class="section">
+        <h2>Quick Start</h2>
+        <p>Install and create a model with OpenRouter:</p>
+        <pre><code>pip install adk-router
+from adk_router import get_model, OpenRouterProvider
+
+# Simple approach
+model = get_model(
+    model_name="xiaomi/mimo-v2-flash:free",
+    provider="openrouter",
+    api_key="YOUR_API_KEY"
+)
+
+# Or use environment variables
+provider = OpenRouterProvider.from_env()
+model = provider.create_model("xiaomi/mimo-v2-flash:free")</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Provider Categories</h2>
+        
+        <h3>Gateway Providers</h3>
+        <p><strong>OpenRouter</strong> - Unified API gateway for 100+ models including free options</p>
+        <div class="providers-grid">
+            <div class="provider-card">
+                <h4>OpenRouter</h4>
+                <div class="provider-meta"><span>gateway</span> <span>free-models</span></div>
+                <div class="provider-base">Base: <code>openrouter.ai/api/v1</code></div>
+                <div class="provider-base">Key: <code>OPENROUTER_API_KEY</code></div>
+                <pre><code>model="xiaomi/mimo-v2-flash:free"</code></pre>
+            </div>
+        </div>
+
+        <h3>Major Providers</h3>
+        <div class="providers-grid">
+            <div class="provider-card">
+                <h4>OpenAI</h4>
+                <div class="provider-meta"><span>provider</span> <span>gpt-4</span></div>
+                <div class="provider-base">Base: <code>api.openai.com/v1</code></div>
+                <div class="provider-base">Key: <code>OPENAI_API_KEY</code></div>
+                <pre><code>model="openai/gpt-4o"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Anthropic</h4>
+                <div class="provider-meta"><span>provider</span> <span>claude</span></div>
+                <div class="provider-base">Base: <code>api.anthropic.com</code></div>
+                <div class="provider-base">Key: <code>ANTHROPIC_API_KEY</code></div>
+                <pre><code>model="anthropic/claude-3-sonnet-20240229"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Groq</h4>
+                <div class="provider-meta"><span>provider</span> <span>fast</span></div>
+                <div class="provider-base">Base: <code>api.groq.com/v1</code></div>
+                <div class="provider-base">Key: <code>GROQ_API_KEY</code></div>
+                <pre><code>model="groq/llama-3.1-70b-sonnet"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Mistral</h4>
+                <div class="provider-meta"><span>provider</span> <span>open-source</span></div>
+                <div class="provider-base">Base: <code>api.mistral.ai/v1</code></div>
+                <div class="provider-base">Key: <code>MISTRAL_API_KEY</code></div>
+                <pre><code>model="mistral/mistral-small-latest"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>xAI (Grok)</h4>
+                <div class="provider-meta"><span>provider</span></div>
+                <div class="provider-base">Base: <code>api.x.ai/v1</code></div>
+                <div class="provider-base">Key: <code>XAI_API_KEY</code></div>
+                <pre><code>model="xai/grok-1.5-flash"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>DeepSeek</h4>
+                <div class="provider-meta"><span>provider</span> <span>free</span></div>
+                <div class="provider-base">Base: <code>api.deepseek.com/v1</code></div>
+                <div class="provider-base">Key: <code>DEEPSEEK_API_KEY</code></div>
+                <pre><code>model="deepseek/deepseek-v3"</code></pre>
+            </div>
+        </div>
+
+        <h3>Cloud Providers</h3>
+        <div class="providers-grid">
+            <div class="provider-card">
+                <h4>Azure OpenAI</h4>
+                <div class="provider-meta"><span>provider</span> <span>azure</span></div>
+                <div class="provider-base">Base: Set AZURE_OPENAI_ENDPOINT</div>
+                <div class="provider-base">Key: <code>AZURE_OPENAI_API_KEY</code></div>
+                <pre><code>model="gpt-4o"
+provider="azure"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>AWS Bedrock</h4>
+                <div class="provider-meta"><span>provider</span> <span>aws</span></div>
+                <div class="provider-base">Base: Auto-resolved</div>
+                <div class="provider-base">Key: AWS credentials</div>
+                <pre><code>model="bedrock/claude-3-sonnet"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Vertex AI</h4>
+                <div class="provider-meta"><span>provider</span> <span>google</span></div>
+                <div class="provider-base">Base: Auto-resolved</div>
+                <div class="provider-base">Key: GOOGLE_APPLICATION_CREDENTIALS</div>
+                <pre><code>model="vertex/gemini-2.0-flash"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>HuggingFace</h4>
+                <div class="provider-meta"><span>provider</span> <span>open</span></div>
+                <div class="provider-base">Base: <code>api-inference.huggingface.co</code></div>
+                <div class="provider-base">Key: <code>HF_TOKEN</code></div>
+                <pre><code>model="huggingface/meta-llama/Llama-3.1-8B"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Together AI</h4>
+                <div class="provider-meta"><span>provider</span> <span>open</span></div>
+                <div class="provider-base">Base: <code>api.together.ai/v1</code></div>
+                <div class="provider-base">Key: <code>TOGETHER_API_KEY</code></div>
+                <pre><code>model="together/meta-llama/Llama-3.1-70B"</code></pre>
+            </div>
+            <div class="provider-card">
+                <h4>Cohere</h4>
+                <div class="provider-meta"><span>provider</span></div>
+                <div class="provider-base">Base: <code>api.cohere.com/v1</code></div>
+                <div class="provider-base">Key: <code>COHERE_API_KEY</code></div>
+                <pre><code>model="cohere/command-r-plus"</code></pre>
+            </div>
+        </div>
+
+        <h3>Local Models</h3>
+        <div class="providers-grid">
+            <div class="provider-card">
+                <h4>Ollama</h4>
+                <div class="provider-meta"><span>local</span> <span>ollama</span></div>
+                <div class="provider-base">Base: <code>localhost:11434</code></div>
+                <div class="provider-base">Key: None (optional)</div>
+                <pre><code>model="ollama/llama3"
+api_base="http://localhost:11434"</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Environment Variables</h2>
+        <p>Set environment variables for automatic configuration:</p>
+        
+        <h3>OpenRouter</h3>
+        <div class="env-var">OPENROUTER_API_KEY=your_openrouter_api_key</div>
+        <div class="env-var">OPENROUTER_BASE_URL=https://openrouter.ai/api/v1</div>
+        <p class="highlight">Base URL is optional - defaults to <code>https://openrouter.ai/api/v1</code></p>
+
+        <h3>OpenAI</h3>
+        <div class="env-var">OPENAI_API_KEY=sk-...</div>
+
+        <h3>Anthropic</h3>
+        <div class="env-var">ANTHROPIC_API_KEY=sk-ant-...</div>
+
+        <h3>Azure OpenAI</h3>
+        <div class="env-var">AZURE_OPENAI_API_KEY=...</div>
+        <div class="env-var">AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/</div>
+    </div>
+
+    <div class="section">
+        <h2>Using LiteLLM Parameters</h2>
+        <p>ADK Router supports all standard LiteLLM parameters:</p>
+        
+        <h3>Common Parameters</h3>
+        <pre><code>from adk_router import get_model
+
+model = get_model(
+    model_name="openrouter/qwen/qwen3-preview:free",
+    provider="openrouter",
+    api_key="YOUR_KEY",
+    temperature=0.7,
+    max_tokens=4096,
+    top_p=0.9,
+    frequency_penalty=0.1,
+    presence_penalty=0.1,
+    stop=["\n\n"],
+    response_format={"type": "json_object"},
+)</code></pre>
+
+        <h3>Advanced Options</h3>
+        <pre><code>from adk_router import get_model
+
+model = get_model(
+    model_name="meta-llama/llama-3.70b-free",
+    provider="openrouter",
+    api_key="YOUR_KEY",
+    temperature=0.3,
+    max_tokens=8192,
+    timeout=120,
+    stream=True,
+    rate_limit_multiplier=1.0,
+    fallback_to_openai=False,
+)</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Creating Custom Providers</h2>
+        <p>Add support for any OpenAI-compatible endpoint:</p>
+        <pre><code>from adk_router import register_provider, get_model
+
+register_provider("my-custom", {
+    "base_url": "https://my-endpoint.com/v1",
+    "env_key": "MY_CUSTOM_API_KEY",
+    "name_prefix": "custom",
+    "description": "My Custom Provider"
+})
+
+# Use your custom provider
+model = get_model("my-model", provider="my-custom")
+
+# With environment variables
+# MY_CUSTOM_API_KEY=your_key_here</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>With ADK Agent</h2>
+        <pre><code>from google.adk.agents import LlmAgent
+from adk_router import OpenRouterProvider
+
+# Method 1: Using provider class
+provider = OpenRouterProvider.from_env()
+model = provider.create_model("xiaomi/mimo-v2-flash:free")
+
+# Method 2: Using get_model
+from adk_router import get_model
+model = get_model(
+    model_name="qwen/qwen3-preview:free",
+    provider="openrouter",
+    api_key="YOUR_KEY"
+)
+
+agent = LlmAgent(
+    model=model,
+    name="research_agent",
+    description="Researches topics using powerful free models",
+    instruction="You are a research assistant. Be thorough and cite sources.",
+)
+
+# Run with ADK
+# adk run agent.py
+# or
+# adk web</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>Example .env File</h2>
+        <pre><code># OpenRouter Configuration (Free Models)
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+
+# OpenAI Configuration
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional: Model preferences
+DEFAULT_MODEL=qwen/qwen3-preview:free
+MAX_TOKENS=4096
+TEMPERATURE=0.7
+
+# For Azure OpenAI
+# AZURE_OPENAI_API_KEY=your_azure_key
+# AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+# AZURE_DEPLOYMENT_NAME=gpt-4o</code></pre>
+    </div>
+
+    <footer>
+        <p class="note">
+            Note: Install dependencies: <code>pip install google-adk litellm python-dotenv</code><br>
+            View full provider list at: <a href="providers.html">providers.html</a>
+        </p>
+    </footer>
+</body>
+</html>
