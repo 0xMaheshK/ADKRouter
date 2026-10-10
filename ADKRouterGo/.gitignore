@@ -1,0 +1,7 @@
+# Binaries
+*.exe
+*.test
+*.out
+
+# Test artifacts
+coverage.*
